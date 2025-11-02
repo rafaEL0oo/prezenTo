@@ -1,0 +1,66 @@
+.dashboard-container {
+  width: 100%;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-header h1 {
+  color: var(--santa-red);
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 15px;
+  border: 2px dashed var(--santa-red-light);
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+}
+
+.groups-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.group-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.group-actions button {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .group-actions {
+    flex-direction: column;
+  }
+}

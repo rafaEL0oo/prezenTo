@@ -1,0 +1,26 @@
+.subtitle {
+  text-align: center;
+  color: var(--santa-red-dark);
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+.switch-mode {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--text-dark);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--santa-red);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.link-btn:hover {
+  color: var(--santa-red-dark);
+}

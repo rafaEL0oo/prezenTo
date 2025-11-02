@@ -1,0 +1,83 @@
+.group-details-card {
+  max-width: 800px;
+}
+
+.group-photo {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-message {
+  background: var(--gold-light);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--gold);
+}
+
+.welcome-message p {
+  margin: 0;
+  font-style: italic;
+  color: var(--text-dark);
+}
+
+.group-info {
+  background: var(--snow-gray);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.group-info p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.admin-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--santa-red-light);
+}
+
+.admin-section h2 {
+  margin-bottom: 1rem;
+  color: var(--santa-red);
+}
+
+.link-section {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.link-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid var(--santa-red-light);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.participants-list li {
+  padding: 0.75rem;
+  background: white;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--santa-red);
+}
+
+@media (max-width: 768px) {
+  .link-section {
+    flex-direction: column;
+  }
+}
+

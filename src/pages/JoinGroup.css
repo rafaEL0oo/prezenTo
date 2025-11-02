@@ -1,0 +1,12 @@
+.questions-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--santa-red-light);
+}
+
+.questions-section h3 {
+  color: var(--santa-red);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+

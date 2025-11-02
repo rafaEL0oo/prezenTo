@@ -1,0 +1,241 @@
+.App {
+  min-height: 100vh;
+}
+
+/* Snowflake animation */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.snowflake {
+  position: fixed;
+  color: white;
+  font-size: 1em;
+  font-family: Arial;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  animation: snowfall linear infinite;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Container styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.card {
+  background: var(--snow-white);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(220, 20, 60, 0.2);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 600px;
+  border: 3px solid var(--santa-red);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '🎄';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 4rem;
+  opacity: 0.1;
+  transform: rotate(15deg);
+}
+
+.card h1 {
+  color: var(--santa-red);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  color: var(--santa-red-dark);
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+/* Button styles */
+.btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary {
+  background: var(--santa-red);
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+}
+
+.btn-primary:hover {
+  background: var(--santa-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+}
+
+.btn-secondary {
+  background: var(--santa-green);
+  color: white;
+  box-shadow: 0 4px 15px rgba(34, 139, 34, 0.4);
+}
+
+.btn-secondary:hover {
+  background: #1E7A1E;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 139, 34, 0.5);
+}
+
+.btn-full {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Form styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--santa-red-light);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--santa-red);
+  box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 4px solid var(--snow-gray);
+  border-top: 4px solid var(--santa-red);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error and success messages */
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background: #FFE5E5;
+  border: 2px solid var(--santa-red);
+  color: var(--santa-red-dark);
+}
+
+.alert-success {
+  background: #E6FFE6;
+  border: 2px solid var(--santa-green);
+  color: var(--santa-green);
+}
+
+/* Group card styles */
+.group-card {
+  background: white;
+  border: 2px solid var(--santa-red);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.group-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+}
+
+.group-card h3 {
+  color: var(--santa-red);
+  margin-bottom: 0.5rem;
+}
+
+.group-card p {
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.group-status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.status-open {
+  background: var(--santa-green-light);
+  color: var(--santa-green);
+}
+
+.status-closed {
+  background: #FFE5E5;
+  color: var(--santa-red-dark);
+}
+
+.status-drawn {
+  background: var(--gold-light);
+  color: #B8860B;
+}

@@ -1,0 +1,116 @@
+import { useState, useEffect } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
+import { db } from '../firebase/config';
+import './Results.css';
+
+function Results() {
+  const { groupId } = useParams();
+  const [group, setGroup] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchGroup();
+  }, [groupId]);
+
+  const fetchGroup = async () => {
+    try {
+      const docRef = doc(db, 'groups', groupId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const groupData = { id: docSnap.id, ...docSnap.data() };
+        setGroup(groupData);
+        
+        // Check if event date has passed
+        const eventDate = groupData.eventDate?.toDate();
+        if (eventDate && eventDate > new Date()) {
+          setError('Results will be available after the event date.');
+        } else if (!groupData.assignments) {
+          setError('Draw has not been performed yet.');
+        }
+      } else {
+        setError('Group not found');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="loading-spinner"></div>;
+  }
+
+  if (error || !group || !group.assignments) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <div className="alert alert-error">{error || 'Results not available'}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const eventDate = group.eventDate?.toDate();
+  const canView = eventDate && eventDate <= new Date();
+
+  if (!canView) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>🎄 {group.groupName}</h1>
+          <div className="alert alert-error">
+            <p>Results will be available after {eventDate.toLocaleDateString()}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="container">
+        <div className="card results-card">
+          <h1>🎁 Secret Santa Results</h1>
+          <h2>{group.groupName}</h2>
+          
+          <div className="results-info">
+            <p><strong>Event Date:</strong> {eventDate.toLocaleDateString()}</p>
+            <p><strong>Total Participants:</strong> {group.participants?.length || 0}</p>
+          </div>
+
+          <div className="assignments-list">
+            <h3>🎅 Who Got Whom:</h3>
+            {group.participants?.map((participant, idx) => {
+              const assignment = group.assignments[participant.email];
+              return (
+                <div key={idx} className="assignment-card">
+                  <div className="participant-name">
+                    <strong>🎄 {participant.name}</strong>
+                  </div>
+                  <div className="arrow">↓</div>
+                  <div className="assigned-name">
+                    <strong>🎁 {assignment?.name || 'Not assigned'}</strong>
+                  </div>
+                  <div className="assigned-email">
+                    {assignment?.email}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="results-note">
+            <p>✨ Thank you for participating in this Secret Santa exchange! ✨</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Results;
+

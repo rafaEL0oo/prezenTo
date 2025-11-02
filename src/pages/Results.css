@@ -1,0 +1,78 @@
+.results-card {
+  max-width: 800px;
+}
+
+.results-info {
+  background: var(--gold-light);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.results-info p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.assignments-list {
+  margin-top: 2rem;
+}
+
+.assignments-list h3 {
+  color: var(--santa-red);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.assignment-card {
+  background: white;
+  border: 3px solid var(--santa-red);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.assignment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+}
+
+.participant-name {
+  font-size: 1.3rem;
+  color: var(--santa-red);
+  margin-bottom: 0.5rem;
+}
+
+.arrow {
+  font-size: 2rem;
+  color: var(--santa-green);
+  margin: 0.5rem 0;
+}
+
+.assigned-name {
+  font-size: 1.3rem;
+  color: var(--santa-green);
+  margin-top: 0.5rem;
+}
+
+.assigned-email {
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+.results-note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--snow-gray);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+}
+

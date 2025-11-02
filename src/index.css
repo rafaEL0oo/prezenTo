@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --santa-red: #DC143C;
+  --santa-red-dark: #B22222;
+  --santa-red-light: #FF6B6B;
+  --santa-green: #228B22;
+  --santa-green-light: #90EE90;
+  --snow-white: #FFFAFA;
+  --snow-gray: #F5F5F5;
+  --text-dark: #2C3E50;
+  --gold: #FFD700;
+  --gold-light: #FFF8DC;
+}
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F5 50%, #E6F3FF 100%);
+  min-height: 100vh;
+  color: var(--text-dark);
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(173, 216, 230, 0.3) 0%, transparent 50%);
+}
+
+button {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+input, textarea, select {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}

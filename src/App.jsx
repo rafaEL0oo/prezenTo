@@ -69,6 +69,22 @@ function RootRedirect() {
   return null;
 }
 
+// NotFound page component for unmatched routes
+function NotFoundPage() {
+  const location = useLocation();
+  return (
+    <div className="page-container">
+      <div className="card">
+        <h1>❌ Page Not Found</h1>
+        <div className="alert alert-error">
+          <p>The page you're looking for doesn't exist.</p>
+          <p>Path: {location.pathname}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   // Use basename for GitHub Pages, empty for local development
   const basename = import.meta.env.PROD ? '/prezenTo' : '';
@@ -85,6 +101,8 @@ function App() {
           <Route path="/create-group" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
           <Route path="/group/:groupId" element={<ProtectedRoute><GroupDetails /></ProtectedRoute>} />
           <Route path="/" element={<RootRedirect />} />
+          {/* Catch-all route - should never be reached if routes are correct */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </Router>

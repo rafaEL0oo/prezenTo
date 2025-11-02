@@ -18,13 +18,10 @@
             var restPath = parts[1].replace(/~and~/g, '&'); // join/AWPRKdAxS9KNbYMSRENx
             var normalizedPath = basePath + '/' + restPath;
             var newUrl = normalizedPath + window.location.search + window.location.hash;
-            // Use history API to avoid page reload and prevent 404 page flash
-            if (window.history && window.history.replaceState) {
-              window.history.replaceState(null, '', newUrl);
-            } else {
-              // Fallback to location.replace if history API not available
-              window.location.replace(newUrl);
-            }
+            // Use location.replace to ensure React Router sees the correct URL on initial load
+            // This is necessary because history.replaceState doesn't trigger navigation events
+            // that React Router needs on initial page load
+            window.location.replace(newUrl);
           }
         }
       })();

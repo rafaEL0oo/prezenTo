@@ -24,6 +24,7 @@ function JoinGroup() {
       setError('Invalid group link');
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId]);
 
   const fetchGroup = async () => {
@@ -35,7 +36,6 @@ function JoinGroup() {
       if (docSnap.exists()) {
         const groupData = { id: docSnap.id, ...docSnap.data() };
         setGroup(groupData);
-        debugger
         
         // Check if group is closed
         if (groupData.status === 'closed' || groupData.status === 'drawn') {
@@ -48,9 +48,12 @@ function JoinGroup() {
       }
     } catch (err) {
       // Handle Firestore permission errors and other errors
+      console.error('Error fetching group:', err);
       let errorMessage = 'Failed to load group. ';
       if (err.code === 'permission-denied') {
-        errorMessage += 'You do not have permission to access this group. The group may be private or may require you to be logged in.';
+        errorMessage += 'You do not have permission to access this group. The group may be private or may require you to be logged in. Please check if the group status is set to "open" in the database.';
+      } else if (err.code === 'unavailable') {
+        errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
       } else if (err.message) {
         errorMessage += err.message;
       } else {

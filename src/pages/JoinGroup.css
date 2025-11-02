@@ -1,3 +1,20 @@
+.group-id-display {
+  background: var(--snow-gray);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.group-id-display p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.group-id-display strong {
+  color: var(--santa-red);
+}
+
 .questions-section {
   margin-top: 2rem;
   padding-top: 2rem;

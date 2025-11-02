@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/config';
@@ -7,7 +7,7 @@ import './JoinGroup.css';
 function JoinGroup() {
   const { groupId } = useParams();
   const [group, setGroup] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -17,41 +17,13 @@ function JoinGroup() {
     answers: {}
   });
 
-  // useEffect(() => {
-  //   // Clean and validate groupId - remove any path components or slashes
-  //   const cleanGroupId = groupId ? groupId.split('/').pop().trim() : null;
-    
-  //   if (cleanGroupId && cleanGroupId.length > 0) {
-  //     // Firestore document IDs should not contain slashes
-  //     if (cleanGroupId.includes('/')) {
-  //       setError('Invalid group ID format');
-  //       setLoading(false);
-  //       return;
-  //     }
-  //     fetchGroup(cleanGroupId);
-  //   } else {
-  //     setError('Invalid group link');
-  //     setLoading(false);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [groupId]);
-  useEffect(() => {
-    if (groupId) {
-      console.log('Raw groupId from params:', groupId);
-      console.log('Window location:', window.location.href);
-      console.log('Window pathname:', window.location.pathname);
-      fetchGroup();
-    } else {
-      setError('Invalid group link');
-      setLoading(false);
-    }
-  }, [groupId]);
+  const fetchGroupDetails = async () => {
+    setLoading(true);
+    setError('');
+    setGroup(null);
 
-  const fetchGroup = async () => {
     try {
-      setError('');
-      
-      // Clean groupId - remove any path segments that might have leaked in
+      // Clean and validate groupId
       const cleanGroupId = groupId?.trim();
       
       if (!cleanGroupId || cleanGroupId.length === 0) {
@@ -62,7 +34,6 @@ function JoinGroup() {
       
       // Validate - Firestore IDs shouldn't contain slashes
       if (cleanGroupId.includes('/')) {
-        console.error('Invalid groupId with slash:', cleanGroupId);
         setError('Invalid group ID format');
         setLoading(false);
         return;
@@ -91,7 +62,7 @@ function JoinGroup() {
       // Handle Firestore permission errors and other errors
       let errorMessage = 'Failed to load group. ';
       if (err.code === 'permission-denied') {
-        errorMessage += 'You do not have permission to access this group.';
+        errorMessage += 'Permission denied - you do not have access to this group.';
       } else if (err.code === 'unavailable') {
         errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
       } else if (err.message) {
@@ -104,54 +75,6 @@ function JoinGroup() {
       setLoading(false);
     }
   };
-
-  // const fetchGroup = async (idToFetch = null) => {
-  //   try {
-  //     setError('');
-  //     // Use provided ID or fallback to groupId from params
-  //     const finalGroupId = idToFetch || groupId?.split('/').pop().trim();
-      
-  //     if (!finalGroupId || finalGroupId.length === 0) {
-  //       setError('Invalid group ID');
-  //       setLoading(false);
-  //       return;
-  //     }
-      
-  //     console.log('Fetching group with ID:', finalGroupId); // Debug log
-  //     const docRef = doc(db, 'groups', finalGroupId);
-  //     const docSnap = await getDoc(docRef);
-      
-  //     if (docSnap.exists()) {
-  //       const groupData = { id: docSnap.id, ...docSnap.data() };
-  //       setGroup(groupData);
-        
-  //       // Check if group is closed
-  //       if (groupData.status === 'closed' || groupData.status === 'drawn') {
-  //         setError('This group is closed. Santas have already been assigned!');
-  //       } else if (groupData.status !== 'open') {
-  //         setError('This group is not open for new participants.');
-  //       }
-  //     } else {
-  //       setError('There is no group with that ID. Please check the link and make sure it is correct.');
-  //     }
-  //   } catch (err) {
-  //     // Handle Firestore permission errors and other errors
-  //     console.error('Error fetching group:', err);
-  //     let errorMessage = 'Failed to load group. ';
-  //     if (err.code === 'permission-denied') {
-  //       errorMessage += 'You do not have permission to access this group. The group may be private or may require you to be logged in. Please check if the group status is set to "open" in the database.';
-  //     } else if (err.code === 'unavailable') {
-  //       errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
-  //     } else if (err.message) {
-  //       errorMessage += err.message;
-  //     } else {
-  //       errorMessage += 'Please try again later.';
-  //     }
-  //     setError(errorMessage);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -191,8 +114,8 @@ function JoinGroup() {
         joinedAt: new Date()
       };
 
-      // Use the group.id from the fetched data, or cleaned groupId from params
-      const finalGroupId = group?.id || groupId?.trim();
+      // Use the group.id from the fetched data
+      const finalGroupId = group.id;
       console.log('Updating group with ID:', finalGroupId);
       
       await updateDoc(doc(db, 'groups', finalGroupId), {
@@ -207,24 +130,75 @@ function JoinGroup() {
     }
   };
 
-  if (loading) {
-    return <div className="loading-spinner"></div>;
-  }
-
-  // Show error if there's an error and no group was loaded
-  if (error && !group) {
+  // Initial state - show group ID and button to fetch
+  if (!group && !loading && !error) {
     return (
       <div className="page-container">
         <div className="card">
-          <h1>❌ Unable to Join Group</h1>
-          <div className="alert alert-error">
-            <p>{error}</p>
+          <h1>Join Group</h1>
+          
+          <div className="group-id-display">
+            <p><strong>Group ID:</strong> {groupId || 'No ID provided'}</p>
           </div>
+
+          <button 
+            onClick={fetchGroupDetails}
+            className="btn btn-primary btn-full"
+            disabled={loading}
+          >
+            {loading ? 'Fetching...' : 'Join to group'}
+          </button>
         </div>
       </div>
     );
   }
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>Join Group</h1>
+          
+          <div className="group-id-display">
+            <p><strong>Group ID:</strong> {groupId}</p>
+          </div>
+
+          <div className="loading-spinner"></div>
+          <p style={{ textAlign: 'center', marginTop: '1rem' }}>Fetching group details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state (no group loaded)
+  if (error && !group) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>❌ Unable to Join Group</h1>
+          
+          <div className="group-id-display">
+            <p><strong>Group ID:</strong> {groupId}</p>
+          </div>
+
+          <div className="alert alert-error">
+            <p>{error}</p>
+          </div>
+
+          <button 
+            onClick={fetchGroupDetails}
+            className="btn btn-secondary btn-full"
+            style={{ marginTop: '1rem' }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Success message after joining
   if (success) {
     return (
       <div className="page-container">
@@ -239,7 +213,7 @@ function JoinGroup() {
     );
   }
 
-  // Show error if group exists but is not accessible (closed, not open, etc.)
+  // Error state (group loaded but has error)
   if (group && error) {
     return (
       <div className="page-container">
@@ -253,6 +227,7 @@ function JoinGroup() {
     );
   }
 
+  // Group closed/drawn state
   if (group && (group.status === 'closed' || group.status === 'drawn')) {
     return (
       <div className="page-container">
@@ -266,20 +241,7 @@ function JoinGroup() {
     );
   }
 
-  // Safety check: only render form if group exists and is accessible
-  if (!group) {
-    return (
-      <div className="page-container">
-        <div className="card">
-          <h1>❌ Unable to Load Group</h1>
-          <div className="alert alert-error">
-            <p>An unexpected error occurred. Please try again later.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // Main form - group is loaded and open
   return (
     <div className="page-container">
       <div className="card">
@@ -358,4 +320,3 @@ function JoinGroup() {
 }
 
 export default JoinGroup;
-

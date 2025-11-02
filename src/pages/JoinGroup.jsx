@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/config';
@@ -7,7 +7,7 @@ import './JoinGroup.css';
 function JoinGroup() {
   const { groupId } = useParams();
   const [group, setGroup] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -16,6 +16,16 @@ function JoinGroup() {
     email: '',
     answers: {}
   });
+
+  useEffect(() => {
+    if (groupId) {
+      fetchGroupDetails();
+    } else {
+      setError('Invalid group link');
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupId]);
 
   const fetchGroupDetails = async () => {
     setLoading(true);
@@ -130,42 +140,12 @@ function JoinGroup() {
     }
   };
 
-  // Initial state - show group ID and button to fetch
-  if (!group && !loading && !error) {
-    return (
-      <div className="page-container">
-        <div className="card">
-          <h1>Join Group</h1>
-          
-          <div className="group-id-display">
-            <p><strong>Group ID:</strong> {groupId || 'No ID provided'}</p>
-          </div>
-
-          <button 
-            onClick={fetchGroupDetails}
-            className="btn btn-primary btn-full"
-            disabled={loading}
-          >
-            {loading ? 'Fetching...' : 'Join to group'}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // Loading state
   if (loading) {
     return (
       <div className="page-container">
         <div className="card">
-          <h1>Join Group</h1>
-          
-          <div className="group-id-display">
-            <p><strong>Group ID:</strong> {groupId}</p>
-          </div>
-
           <div className="loading-spinner"></div>
-          <p style={{ textAlign: 'center', marginTop: '1rem' }}>Fetching group details...</p>
         </div>
       </div>
     );
@@ -177,22 +157,9 @@ function JoinGroup() {
       <div className="page-container">
         <div className="card">
           <h1>❌ Unable to Join Group</h1>
-          
-          <div className="group-id-display">
-            <p><strong>Group ID:</strong> {groupId}</p>
-          </div>
-
           <div className="alert alert-error">
             <p>{error}</p>
           </div>
-
-          <button 
-            onClick={fetchGroupDetails}
-            className="btn btn-secondary btn-full"
-            style={{ marginTop: '1rem' }}
-          >
-            Try Again
-          </button>
         </div>
       </div>
     );

@@ -202,7 +202,6 @@
 }
 
 .group-card:hover {
-  transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
 }
 

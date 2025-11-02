@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
-import { auth, db, storage } from '../firebase/config';
+import { auth, db } from '../firebase/config';
 import './CreateGroup.css';
 
 const CHAOS_QUESTIONS = [
@@ -23,18 +22,15 @@ function CreateGroup() {
     eventDate: '',
     adminParticipating: false,
     adminName: '',
-    adminEmail: '',
-    photo: null
+    adminEmail: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
+    const { name, value, type, checked } = e.target;
     if (type === 'checkbox') {
       setFormData({ ...formData, [name]: checked });
-    } else if (type === 'file') {
-      setFormData({ ...formData, [name]: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -60,21 +56,6 @@ function CreateGroup() {
         throw new Error('Please provide your name and email if participating');
       }
 
-      // Upload photo if provided (optional - continue even if upload fails)
-      let photoURL = null;
-      if (formData.photo) {
-        try {
-          const photoRef = ref(storage, `group-photos/${Date.now()}_${formData.photo.name}`);
-          await uploadBytes(photoRef, formData.photo);
-          photoURL = await getDownloadURL(photoRef);
-        } catch (photoError) {
-          console.warn('Photo upload failed, continuing without photo:', photoError);
-          // Continue without photo - it's optional
-          // You can uncomment the line below if you want to show a warning:
-          // setError('Warning: Photo upload failed, but group was created successfully.');
-        }
-      }
-
       // Create group document
       const groupData = {
         groupName: formData.groupName,
@@ -84,7 +65,6 @@ function CreateGroup() {
         eventDate: new Date(formData.eventDate),
         adminId: user.uid,
         adminEmail: user.email,
-        photoURL,
         status: 'open',
         participants: [],
         createdAt: new Date(),
@@ -138,16 +118,6 @@ function CreateGroup() {
               value={formData.welcomeMessage}
               onChange={handleInputChange}
               placeholder="A warm message for participants joining your group..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Group Photo</label>
-            <input
-              type="file"
-              name="photo"
-              onChange={handleInputChange}
-              accept="image/*"
             />
           </div>
 

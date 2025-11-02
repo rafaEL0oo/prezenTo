@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useParams, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase/config';
 import './GroupDetails.css';
@@ -10,6 +10,7 @@ function GroupDetails() {
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [drawing, setDrawing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -88,9 +89,29 @@ function GroupDetails() {
   };
 
   const copyLink = () => {
-    const link = `${window.location.origin}/join/${groupId}`;
+    const basename = import.meta.env.PROD ? '/prezenTo' : '';
+    const link = `${window.location.origin}${basename}/join/${groupId}`;
     navigator.clipboard.writeText(link);
     alert('Link copied to clipboard!');
+  };
+
+  const handleDeleteGroup = async () => {
+    if (!window.confirm('Are you sure you want to delete this group? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeleting(true);
+    setError('');
+
+    try {
+      await deleteDoc(doc(db, 'groups', groupId));
+      alert('Group deleted successfully!');
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -110,7 +131,8 @@ function GroupDetails() {
     );
   }
 
-  const joinLink = `${window.location.origin}/join/${groupId}`;
+  const basename = import.meta.env.PROD ? '/prezenTo' : '';
+  const joinLink = `${window.location.origin}${basename}/join/${groupId}`;
   const isAdmin = group.adminId === auth.currentUser?.uid;
   const canDraw = group.status === 'open' && group.participants.length >= 2;
 
@@ -118,10 +140,6 @@ function GroupDetails() {
     <div className="page-container">
       <div className="container">
         <div className="card group-details-card">
-          {group.photoURL && (
-            <img src={group.photoURL} alt={group.groupName} className="group-photo" />
-          )}
-          
           <h1>{group.groupName}</h1>
           
           {group.welcomeMessage && (
@@ -159,7 +177,7 @@ function GroupDetails() {
                 <ul className="participants-list">
                   {group.participants.map((p, idx) => (
                     <li key={idx}>
-                      {p.name} ({p.email}) {p.isAdmin && '(Admin)'}
+                      {p.name} {p.isAdmin && '(Admin)'}
                     </li>
                   ))}
                 </ul>
@@ -183,6 +201,15 @@ function GroupDetails() {
                   View Results
                 </button>
               )}
+
+              <button 
+                onClick={handleDeleteGroup}
+                className="btn btn-secondary btn-full"
+                disabled={deleting}
+                style={{ marginTop: '1rem', background: '#DC143C', color: 'white' }}
+              >
+                {deleting ? 'Deleting...' : '🗑️ Delete Group'}
+              </button>
             </div>
           )}
 

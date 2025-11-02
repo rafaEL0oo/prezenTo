@@ -95,9 +95,6 @@ function Results() {
                   <div className="assigned-name">
                     <strong>🎁 {assignment?.name || 'Not assigned'}</strong>
                   </div>
-                  <div className="assigned-email">
-                    {assignment?.email}
-                  </div>
                 </div>
               );
             })}

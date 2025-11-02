@@ -35,6 +35,7 @@ function JoinGroup() {
       if (docSnap.exists()) {
         const groupData = { id: docSnap.id, ...docSnap.data() };
         setGroup(groupData);
+        debugger
         
         // Check if group is closed
         if (groupData.status === 'closed' || groupData.status === 'drawn') {

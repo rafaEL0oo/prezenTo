@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { db } from '../firebase/config';
 import './JoinGroup.css';
 
 function JoinGroup() {
   const { groupId } = useParams();
-  const navigate = useNavigate();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -29,6 +28,7 @@ function JoinGroup() {
 
   const fetchGroup = async () => {
     try {
+      setError('');
       const docRef = doc(db, 'groups', groupId);
       const docSnap = await getDoc(docRef);
       
@@ -39,12 +39,23 @@ function JoinGroup() {
         // Check if group is closed
         if (groupData.status === 'closed' || groupData.status === 'drawn') {
           setError('This group is closed. Santas have already been assigned!');
+        } else if (groupData.status !== 'open') {
+          setError('This group is not open for new participants.');
         }
       } else {
-        setError('Group not found');
+        setError('Group not found. Please check the link and try again.');
       }
     } catch (err) {
-      setError(err.message);
+      // Handle Firestore permission errors and other errors
+      let errorMessage = 'Failed to load group. ';
+      if (err.code === 'permission-denied') {
+        errorMessage += 'You do not have permission to access this group. The group may be private or may require you to be logged in.';
+      } else if (err.message) {
+        errorMessage += err.message;
+      } else {
+        errorMessage += 'Please try again later.';
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -104,11 +115,15 @@ function JoinGroup() {
     return <div className="loading-spinner"></div>;
   }
 
+  // Show error if there's an error and no group was loaded
   if (error && !group) {
     return (
       <div className="page-container">
         <div className="card">
-          <div className="alert alert-error">{error}</div>
+          <h1>❌ Unable to Join Group</h1>
+          <div className="alert alert-error">
+            <p>{error}</p>
+          </div>
         </div>
       </div>
     );
@@ -128,13 +143,41 @@ function JoinGroup() {
     );
   }
 
-  if (group.status === 'closed' || group.status === 'drawn') {
+  // Show error if group exists but is not accessible (closed, not open, etc.)
+  if (group && error) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>🎄 {group.groupName || 'Group'}</h1>
+          <div className="alert alert-error">
+            <p>{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (group && (group.status === 'closed' || group.status === 'drawn')) {
     return (
       <div className="page-container">
         <div className="card">
           <h1>🎄 {group.groupName}</h1>
           <div className="alert alert-error">
             <p>This group is closed and the Santas have already been assigned!</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Safety check: only render form if group exists and is accessible
+  if (!group) {
+    return (
+      <div className="page-container">
+        <div className="card">
+          <h1>❌ Unable to Load Group</h1>
+          <div className="alert alert-error">
+            <p>An unexpected error occurred. Please try again later.</p>
           </div>
         </div>
       </div>

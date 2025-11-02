@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /groups/{groupId} {
+      // Allow read if:
+      // 1. User is authenticated (can read any group - Firestore will filter by query)
+      // 2. OR the group status is 'open' (for join links without auth)
+      allow read: if request.auth != null || resource.data.status == 'open';
+      
+      // Allow create if user is authenticated and sets themselves as admin
+      allow create: if request.auth != null 
+        && request.resource.data.adminId == request.auth.uid;
+      
+      // Allow update if:
+      // 1. User is authenticated AND is the admin
+      // 2. OR user is adding themselves as participant (no auth required for join links)
+      allow update: if (
+        request.auth != null && request.auth.uid == resource.data.adminId
+      ) || (
+        request.auth == null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+        request.resource.data.participants.size() == resource.data.participants.size() + 1
+      );
+      
+      // Allow delete if user is the admin
+      allow delete: if request.auth != null && request.auth.uid == resource.data.adminId;
+    }
+  }
+}
+
+

@@ -46,27 +46,41 @@ const firebaseConfig = {
 
 ### 3. Firestore Security Rules
 
-Set up your Firestore security rules:
+Set up your Firestore security rules in Firebase Console > Firestore Database > Rules:
 
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /groups/{groupId} {
-      // Allow read for authenticated users and anyone with the join link
+      // Allow read if:
+      // 1. User is authenticated (can read any group - Firestore will filter by query)
+      // 2. OR the group status is 'open' (for join links without auth)
       allow read: if request.auth != null || resource.data.status == 'open';
       
-      // Allow write for admins
-      allow create: if request.auth != null;
-      allow update: if request.auth != null && request.auth.uid == resource.data.adminId;
+      // Allow create if user is authenticated
+      allow create: if request.auth != null 
+        && request.resource.data.adminId == request.auth.uid;
       
-      // Allow participants to add themselves
-      allow update: if request.auth == null && 
-        request.resource.data.diff(resource.data).unaffectedKeys(resource.data.keys()).hasOnly(['participants']);
+      // Allow update if:
+      // 1. User is authenticated AND is the admin
+      // 2. OR user is adding themselves as participant (no auth required for join links)
+      allow update: if (
+        request.auth != null && request.auth.uid == resource.data.adminId
+      ) || (
+        request.auth == null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+        request.resource.data.participants.size() == resource.data.participants.size() + 1
+      );
+      
+      // Allow delete if user is the admin
+      allow delete: if request.auth != null && request.auth.uid == resource.data.adminId;
     }
   }
 }
 ```
+
+**Note:** A `firestore.rules` file is included in the repository for reference. Copy the rules above to Firebase Console.
 
 ### 4. Storage Security Rules
 

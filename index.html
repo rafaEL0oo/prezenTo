@@ -6,22 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PrezenTo - Secret Santa App 🎅</title>
     <script>
-      // Fix GitHub Pages 404.html redirect format before React loads
-      // This prevents showing the 404 page by immediately normalizing the URL
+      // Fix GitHub Pages 404.html redirect before React loads
+      // When GitHub Pages serves 404.html for a missing route, it stores the pathname in sessionStorage
+      // This script restores that pathname before React Router initializes
       (function() {
+        var storedPath = sessionStorage.getItem('githubPagesPathname');
+        if (storedPath && storedPath !== window.location.pathname) {
+          // Restore the original pathname using replaceState before React Router loads
+          history.replaceState(null, '', storedPath + window.location.search + window.location.hash);
+          sessionStorage.removeItem('githubPagesPathname');
+        }
+        
+        // Handle the old /?/ format from previous redirects (backward compatibility)
         var pathname = window.location.pathname;
         if (pathname.includes('/?/')) {
-          // Extract the path after /?/
           var parts = pathname.split('/?/');
           if (parts.length === 2) {
             var basePath = parts[0]; // /prezenTo
             var restPath = parts[1].replace(/~and~/g, '&'); // join/AWPRKdAxS9KNbYMSRENx
             var normalizedPath = basePath + '/' + restPath;
             var newUrl = normalizedPath + window.location.search + window.location.hash;
-            // Use location.replace to ensure React Router sees the correct URL on initial load
-            // This is necessary because history.replaceState doesn't trigger navigation events
-            // that React Router needs on initial page load
-            window.location.replace(newUrl);
+            history.replaceState(null, '', newUrl);
           }
         }
       })();

@@ -30,7 +30,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router basename="/prezenTo">
       <div className="App">
         <Snowflakes />
         <Routes>

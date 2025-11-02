@@ -18,8 +18,17 @@ function JoinGroup() {
   });
 
   useEffect(() => {
-    if (groupId) {
-      fetchGroup();
+    // Clean and validate groupId - remove any path components or slashes
+    const cleanGroupId = groupId ? groupId.split('/').pop().trim() : null;
+    
+    if (cleanGroupId && cleanGroupId.length > 0) {
+      // Firestore document IDs should not contain slashes
+      if (cleanGroupId.includes('/')) {
+        setError('Invalid group ID format');
+        setLoading(false);
+        return;
+      }
+      fetchGroup(cleanGroupId);
     } else {
       setError('Invalid group link');
       setLoading(false);
@@ -27,10 +36,20 @@ function JoinGroup() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId]);
 
-  const fetchGroup = async () => {
+  const fetchGroup = async (idToFetch = null) => {
     try {
       setError('');
-      const docRef = doc(db, 'groups', groupId);
+      // Use provided ID or fallback to groupId from params
+      const finalGroupId = idToFetch || groupId?.split('/').pop().trim();
+      
+      if (!finalGroupId || finalGroupId.length === 0) {
+        setError('Invalid group ID');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('Fetching group with ID:', finalGroupId); // Debug log
+      const docRef = doc(db, 'groups', finalGroupId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -103,7 +122,9 @@ function JoinGroup() {
         joinedAt: new Date()
       };
 
-      await updateDoc(doc(db, 'groups', groupId), {
+      // Clean groupId to ensure we use the correct one
+      const cleanGroupId = groupId?.split('/').pop().trim() || group.id;
+      await updateDoc(doc(db, 'groups', cleanGroupId), {
         participants: arrayUnion(participantData)
       });
 

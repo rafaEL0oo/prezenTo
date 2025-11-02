@@ -17,72 +17,92 @@ function JoinGroup() {
     answers: {}
   });
 
-  useEffect(() => {
-    // Clean and validate groupId - remove any path components or slashes
-    const cleanGroupId = groupId ? groupId.split('/').pop().trim() : null;
+  // useEffect(() => {
+  //   // Clean and validate groupId - remove any path components or slashes
+  //   const cleanGroupId = groupId ? groupId.split('/').pop().trim() : null;
     
-    if (cleanGroupId && cleanGroupId.length > 0) {
-      // Firestore document IDs should not contain slashes
-      if (cleanGroupId.includes('/')) {
-        setError('Invalid group ID format');
-        setLoading(false);
-        return;
-      }
-      fetchGroup(cleanGroupId);
-    } else {
-      setError('Invalid group link');
-      setLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   if (cleanGroupId && cleanGroupId.length > 0) {
+  //     // Firestore document IDs should not contain slashes
+  //     if (cleanGroupId.includes('/')) {
+  //       setError('Invalid group ID format');
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     fetchGroup(cleanGroupId);
+  //   } else {
+  //     setError('Invalid group link');
+  //     setLoading(false);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [groupId]);
+  useEffect(() => {
+    fetchGroup();
   }, [groupId]);
 
-  const fetchGroup = async (idToFetch = null) => {
+  const fetchGroup = async () => {
     try {
-      setError('');
-      // Use provided ID or fallback to groupId from params
-      const finalGroupId = idToFetch || groupId?.split('/').pop().trim();
-      
-      if (!finalGroupId || finalGroupId.length === 0) {
-        setError('Invalid group ID');
-        setLoading(false);
-        return;
-      }
-      
-      console.log('Fetching group with ID:', finalGroupId); // Debug log
-      const docRef = doc(db, 'groups', finalGroupId);
+      const docRef = doc(db, 'groups', groupId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        const groupData = { id: docSnap.id, ...docSnap.data() };
-        setGroup(groupData);
-        
-        // Check if group is closed
-        if (groupData.status === 'closed' || groupData.status === 'drawn') {
-          setError('This group is closed. Santas have already been assigned!');
-        } else if (groupData.status !== 'open') {
-          setError('This group is not open for new participants.');
-        }
+        setGroup({ id: docSnap.id, ...docSnap.data() });
       } else {
-        setError('There is no group with that ID. Please check the link and make sure it is correct.');
+        setError('Group not found');
       }
     } catch (err) {
-      // Handle Firestore permission errors and other errors
-      console.error('Error fetching group:', err);
-      let errorMessage = 'Failed to load group. ';
-      if (err.code === 'permission-denied') {
-        errorMessage += 'You do not have permission to access this group. The group may be private or may require you to be logged in. Please check if the group status is set to "open" in the database.';
-      } else if (err.code === 'unavailable') {
-        errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
-      } else if (err.message) {
-        errorMessage += err.message;
-      } else {
-        errorMessage += 'Please try again later.';
-      }
-      setError(errorMessage);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  // const fetchGroup = async (idToFetch = null) => {
+  //   try {
+  //     setError('');
+  //     // Use provided ID or fallback to groupId from params
+  //     const finalGroupId = idToFetch || groupId?.split('/').pop().trim();
+      
+  //     if (!finalGroupId || finalGroupId.length === 0) {
+  //       setError('Invalid group ID');
+  //       setLoading(false);
+  //       return;
+  //     }
+      
+  //     console.log('Fetching group with ID:', finalGroupId); // Debug log
+  //     const docRef = doc(db, 'groups', finalGroupId);
+  //     const docSnap = await getDoc(docRef);
+      
+  //     if (docSnap.exists()) {
+  //       const groupData = { id: docSnap.id, ...docSnap.data() };
+  //       setGroup(groupData);
+        
+  //       // Check if group is closed
+  //       if (groupData.status === 'closed' || groupData.status === 'drawn') {
+  //         setError('This group is closed. Santas have already been assigned!');
+  //       } else if (groupData.status !== 'open') {
+  //         setError('This group is not open for new participants.');
+  //       }
+  //     } else {
+  //       setError('There is no group with that ID. Please check the link and make sure it is correct.');
+  //     }
+  //   } catch (err) {
+  //     // Handle Firestore permission errors and other errors
+  //     console.error('Error fetching group:', err);
+  //     let errorMessage = 'Failed to load group. ';
+  //     if (err.code === 'permission-denied') {
+  //       errorMessage += 'You do not have permission to access this group. The group may be private or may require you to be logged in. Please check if the group status is set to "open" in the database.';
+  //     } else if (err.code === 'unavailable') {
+  //       errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
+  //     } else if (err.message) {
+  //       errorMessage += err.message;
+  //     } else {
+  //       errorMessage += 'Please try again later.';
+  //     }
+  //     setError(errorMessage);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

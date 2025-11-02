@@ -36,21 +36,70 @@ function JoinGroup() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [groupId]);
   useEffect(() => {
-    fetchGroup();
+    if (groupId) {
+      console.log('Raw groupId from params:', groupId);
+      console.log('Window location:', window.location.href);
+      console.log('Window pathname:', window.location.pathname);
+      fetchGroup();
+    } else {
+      setError('Invalid group link');
+      setLoading(false);
+    }
   }, [groupId]);
 
   const fetchGroup = async () => {
     try {
-      const docRef = doc(db, 'groups', groupId);
+      setError('');
+      
+      // Clean groupId - remove any path segments that might have leaked in
+      const cleanGroupId = groupId?.trim();
+      
+      if (!cleanGroupId || cleanGroupId.length === 0) {
+        setError('Invalid group ID');
+        setLoading(false);
+        return;
+      }
+      
+      // Validate - Firestore IDs shouldn't contain slashes
+      if (cleanGroupId.includes('/')) {
+        console.error('Invalid groupId with slash:', cleanGroupId);
+        setError('Invalid group ID format');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('Fetching group with ID:', cleanGroupId);
+      const docRef = doc(db, 'groups', cleanGroupId);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
-        setGroup({ id: docSnap.id, ...docSnap.data() });
+        const groupData = { id: docSnap.id, ...docSnap.data() };
+        setGroup(groupData);
+        
+        // Check if group is closed
+        if (groupData.status === 'closed' || groupData.status === 'drawn') {
+          setError('This group is closed. Santas have already been assigned!');
+        } else if (groupData.status !== 'open') {
+          setError('This group is not open for new participants.');
+        }
       } else {
-        setError('Group not found');
+        console.error('Group not found with ID:', cleanGroupId);
+        setError('There is no group with that ID. Please check the link and make sure it is correct.');
       }
     } catch (err) {
-      setError(err.message);
+      console.error('Error fetching group:', err);
+      // Handle Firestore permission errors and other errors
+      let errorMessage = 'Failed to load group. ';
+      if (err.code === 'permission-denied') {
+        errorMessage += 'You do not have permission to access this group.';
+      } else if (err.code === 'unavailable') {
+        errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
+      } else if (err.message) {
+        errorMessage += err.message;
+      } else {
+        errorMessage += 'Please try again later.';
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -142,9 +191,11 @@ function JoinGroup() {
         joinedAt: new Date()
       };
 
-      // Clean groupId to ensure we use the correct one
-      const cleanGroupId = groupId?.split('/').pop().trim() || group.id;
-      await updateDoc(doc(db, 'groups', cleanGroupId), {
+      // Use the group.id from the fetched data, or cleaned groupId from params
+      const finalGroupId = group?.id || groupId?.trim();
+      console.log('Updating group with ID:', finalGroupId);
+      
+      await updateDoc(doc(db, 'groups', finalGroupId), {
         participants: arrayUnion(participantData)
       });
 

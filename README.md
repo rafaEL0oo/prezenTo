@@ -2,6 +2,8 @@
 
 A magical Secret Santa web application built with React and Firebase, featuring both Standard and Chaos modes for gift exchanges!
 
+**🌐 Live Demo:** [https://rafaEL0oo.github.io/prezenTo/](https://rafaEL0oo.github.io/prezenTo/)
+
 ## Features
 
 - **Group Management**: Create and manage Secret Santa groups
@@ -95,11 +97,43 @@ You can add this functionality in the `GroupDetails.jsx` file where the `perform
 
 ### 6. Run the Application
 
+**Development:**
 ```bash
 npm run dev
 ```
 
 The app will be available at `http://localhost:5173`
+
+**Production Build:**
+```bash
+npm run build
+```
+
+### 7. Deploy to GitHub Pages
+
+The repository is already configured for GitHub Pages deployment using GitHub Actions.
+
+1. **Enable GitHub Pages:**
+   - Go to your repository settings on GitHub
+   - Navigate to **Pages** section
+   - Under "Source", select **GitHub Actions**
+   - Save the settings
+
+2. **Automatic Deployment:**
+   - Every push to the `main` branch will automatically trigger a deployment
+   - The GitHub Actions workflow will build and deploy your app
+   - Your app will be available at: `https://rafaEL0oo.github.io/prezenTo/`
+
+3. **Manual Deployment (Alternative):**
+   ```bash
+   npm install -g gh-pages
+   npm run deploy
+   ```
+
+**Important:** After deploying to GitHub Pages, make sure to:
+- Update your Firebase config to allow your GitHub Pages domain
+- Add `https://rafaEL0oo.github.io` to Firebase Authentication authorized domains
+- Update CORS settings in Firebase Storage if you're using photo uploads
 
 ## Project Structure
 

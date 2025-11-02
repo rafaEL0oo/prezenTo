@@ -37,12 +37,12 @@ function App() {
       <div className="App">
         <Snowflakes />
         <Routes>
+          <Route path="/join/:groupId" element={<JoinGroup />} />
+          <Route path="/results/:groupId" element={<Results />} />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/create-group" element={user ? <CreateGroup /> : <Navigate to="/login" />} />
           <Route path="/group/:groupId" element={user ? <GroupDetails /> : <Navigate to="/login" />} />
-          <Route path="/join/:groupId" element={<JoinGroup />} />
-          <Route path="/results/:groupId" element={<Results />} />
           <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
         </Routes>
       </div>

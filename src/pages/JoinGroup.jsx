@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../firebase/config';
 import './JoinGroup.css';
 
 function JoinGroup() {
   const { groupId } = useParams();
+  const navigate = useNavigate();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -18,7 +19,12 @@ function JoinGroup() {
   });
 
   useEffect(() => {
-    fetchGroup();
+    if (groupId) {
+      fetchGroup();
+    } else {
+      setError('Invalid group link');
+      setLoading(false);
+    }
   }, [groupId]);
 
   const fetchGroup = async () => {

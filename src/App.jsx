@@ -62,7 +62,6 @@ function App() {
         <Snowflakes />
         <Routes>
           <Route path="/join/:groupId" element={<JoinGroup />} />
-          <Route path="/?/join/:groupId" element={<JoinGroup />} />
           <Route path="/results/:groupId" element={<Results />} />
           <Route path="/login" element={<LoginRoute />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

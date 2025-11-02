@@ -29,8 +29,11 @@ function App() {
     return <Loading />;
   }
 
+  // Use basename for GitHub Pages, empty for local development
+  const basename = import.meta.env.PROD ? '/prezenTo' : '';
+
   return (
-    <Router basename="/prezenTo">
+    <Router basename={basename}>
       <div className="App">
         <Snowflakes />
         <Routes>

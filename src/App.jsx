@@ -12,7 +12,8 @@ import Loading from './components/Loading';
 import Snowflakes from './components/Snowflakes';
 import './App.css';
 
-function App() {
+// Protected route wrapper
+function ProtectedRoute({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +22,6 @@ function App() {
       setUser(currentUser);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -29,6 +29,30 @@ function App() {
     return <Loading />;
   }
 
+  return user ? children : <Navigate to="/login" />;
+}
+
+// Login route wrapper - redirects if already logged in
+function LoginRoute() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  return user ? <Navigate to="/dashboard" /> : <Login />;
+}
+
+function App() {
   // Use basename for GitHub Pages, empty for local development
   const basename = import.meta.env.PROD ? '/prezenTo' : '';
 
@@ -39,11 +63,11 @@ function App() {
         <Routes>
           <Route path="/join/:groupId" element={<JoinGroup />} />
           <Route path="/results/:groupId" element={<Results />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-          <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-          <Route path="/create-group" element={user ? <CreateGroup /> : <Navigate to="/login" />} />
-          <Route path="/group/:groupId" element={user ? <GroupDetails /> : <Navigate to="/login" />} />
-          <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+          <Route path="/login" element={<LoginRoute />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/create-group" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
+          <Route path="/group/:groupId" element={<ProtectedRoute><GroupDetails /></ProtectedRoute>} />
+          <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>
     </Router>

@@ -43,7 +43,7 @@ function JoinGroup() {
           setError('This group is not open for new participants.');
         }
       } else {
-        setError('Group not found. Please check the link and try again.');
+        setError('There is no group with that ID. Please check the link and make sure it is correct.');
       }
     } catch (err) {
       // Handle Firestore permission errors and other errors

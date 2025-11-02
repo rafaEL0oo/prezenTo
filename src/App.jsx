@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/config';
@@ -52,6 +52,23 @@ function LoginRoute() {
   return user ? <Navigate to="/dashboard" /> : <Login />;
 }
 
+// Root redirect component - only redirects if we're exactly at the root path
+// This component ensures we only redirect from the exact root, not during route transitions
+// With basename configured in Router, location.pathname is already relative to basename
+function RootRedirect() {
+  const location = useLocation();
+  // React Router v6 strips basename from location.pathname automatically
+  // So at root (/prezenTo/ or /), pathname will be '/' or ''
+  // This check ensures we only redirect from exact root, preventing interference during URL normalization
+  const isExactRoot = location.pathname === '/' || location.pathname === '';
+  
+  if (isExactRoot) {
+    return <Navigate to="/login" replace />;
+  }
+  // If we somehow get here without matching a route, don't redirect
+  return null;
+}
+
 function App() {
   // Use basename for GitHub Pages, empty for local development
   const basename = import.meta.env.PROD ? '/prezenTo' : '';
@@ -67,7 +84,7 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/create-group" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
           <Route path="/group/:groupId" element={<ProtectedRoute><GroupDetails /></ProtectedRoute>} />
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<RootRedirect />} />
         </Routes>
       </div>
     </Router>

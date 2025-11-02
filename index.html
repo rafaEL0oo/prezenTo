@@ -7,6 +7,7 @@
     <title>PrezenTo - Secret Santa App 🎅</title>
     <script>
       // Fix GitHub Pages 404.html redirect format before React loads
+      // This prevents showing the 404 page by immediately normalizing the URL
       (function() {
         var pathname = window.location.pathname;
         if (pathname.includes('/?/')) {
@@ -17,8 +18,13 @@
             var restPath = parts[1].replace(/~and~/g, '&'); // join/AWPRKdAxS9KNbYMSRENx
             var normalizedPath = basePath + '/' + restPath;
             var newUrl = normalizedPath + window.location.search + window.location.hash;
-            // Use replace to ensure React Router sees the correct URL
-            window.location.replace(newUrl);
+            // Use history API to avoid page reload and prevent 404 page flash
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState(null, '', newUrl);
+            } else {
+              // Fallback to location.replace if history API not available
+              window.location.replace(newUrl);
+            }
           }
         }
       })();

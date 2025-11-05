@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useParams, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase/config';
+import { sendDrawNotificationsToAll, sendDrawNotification } from '../services/email';
 import './GroupDetails.css';
 
 function GroupDetails() {
@@ -12,6 +13,7 @@ function GroupDetails() {
   const [drawing, setDrawing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [resendingEmail, setResendingEmail] = useState(null); // Track which participant email is being resent
 
   useEffect(() => {
     fetchGroup();
@@ -76,10 +78,28 @@ function GroupDetails() {
         drawnAt: new Date()
       });
 
-      // TODO: Send email notifications here
-      // You'll need to implement email sending (Firebase Cloud Functions or email service)
+      // Send email notifications to all participants
+      try {
+        const emailResults = await sendDrawNotificationsToAll(
+          group.participants,
+          assignments,
+          { ...group, assignments }
+        );
 
-      alert('Draw completed! Participants have been notified via email.');
+        const successCount = emailResults.filter(r => r.success).length;
+        const failureCount = emailResults.filter(r => !r.success).length;
+
+        if (failureCount === 0) {
+          alert(`Draw completed! All ${successCount} participants have been notified via email.`);
+        } else {
+          alert(`Draw completed! ${successCount} participants were notified via email. ${failureCount} email(s) failed to send.`);
+          console.error('Email sending errors:', emailResults.filter(r => !r.success));
+        }
+      } catch (emailError) {
+        console.error('Error sending emails:', emailError);
+        alert(`Draw completed! However, there was an error sending email notifications. Please try again or notify participants manually.`);
+      }
+
       fetchGroup();
     } catch (err) {
       setError(err.message);
@@ -93,6 +113,26 @@ function GroupDetails() {
     const link = `${window.location.origin}${basename}/join/${groupId}`;
     navigator.clipboard.writeText(link);
     alert('Link copied to clipboard!');
+  };
+
+  const handleResendEmail = async (participant) => {
+    if (!group.assignments || !group.assignments[participant.email]) {
+      setError('No assignment found for this participant');
+      return;
+    }
+
+    setResendingEmail(participant.email);
+    setError('');
+
+    try {
+      const match = group.assignments[participant.email];
+      await sendDrawNotification(participant, match, group);
+      alert(`Email notification sent successfully to ${participant.name}!`);
+    } catch (err) {
+      setError(`Failed to send email to ${participant.name}: ${err.message}`);
+    } finally {
+      setResendingEmail(null);
+    }
   };
 
   const handleDeleteGroup = async () => {
@@ -176,8 +216,24 @@ function GroupDetails() {
               ) : (
                 <ul className="participants-list">
                   {group.participants.map((p, idx) => (
-                    <li key={idx}>
-                      {p.name} {p.isAdmin && '(Admin)'}
+                    <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span>
+                        {p.name} {p.isAdmin && '(Admin)'}
+                      </span>
+                      {group.status === 'drawn' && group.assignments && group.assignments[p.email] && (
+                        <button
+                          onClick={() => handleResendEmail(p)}
+                          className="btn btn-secondary"
+                          disabled={resendingEmail === p.email}
+                          style={{ 
+                            padding: '0.25rem 0.75rem', 
+                            fontSize: '0.875rem',
+                            marginLeft: '1rem'
+                          }}
+                        >
+                          {resendingEmail === p.email ? 'Sending...' : '📧 Resend Email'}
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>

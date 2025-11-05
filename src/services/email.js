@@ -1,10 +1,10 @@
 /**
- * Email service using MailerSend API
+ * Email service using Brevo API
  * Sends transactional emails to participants
  */
 
-const MAILERSEND_API_KEY = import.meta.env.VITE_MAILERSEND_API_KEY || 'mlsn.1f236e646f1d07c8ae9624c30cf5c8d783586371e631d30c019959af1f37dcb9';
-const MAILERSEND_API_URL = 'https://api.mailersend.com/v1/email';
+const BREVO_API_KEY = import.meta.env.VITE_BREVO_API_KEY;
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
 /**
  * Send email notification to a participant about their Secret Santa match
@@ -126,9 +126,9 @@ export async function sendDrawNotification(participant, match, group) {
   `;
 
   const emailData = {
-    from: {
-      email: 'noreply@prezento.app', // You may want to configure this
-      name: 'PrezenTo'
+    sender: {
+      name: 'PrezenTo',
+      email: 'rafal2516@gmail.com' // You may want to configure this
     },
     to: [
       {
@@ -137,14 +137,14 @@ export async function sendDrawNotification(participant, match, group) {
       }
     ],
     subject: emailSubject,
-    html: emailContent
+    htmlContent: emailContent
   };
 
   try {
-    const response = await fetch(MAILERSEND_API_URL, {
+    const response = await fetch(BREVO_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${MAILERSEND_API_KEY}`,
+        'api-key': BREVO_API_KEY,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },

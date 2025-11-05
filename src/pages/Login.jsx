@@ -35,7 +35,7 @@ function Login() {
     <div className="page-container">
       <div className="card login-card">
         <h1>🎅 PrezenTo</h1>
-        <p className="subtitle">Secret Santa Made Magical</p>
+        <p className="subtitle">Świąteczny Mikołaj - Magicznie Uproszczony</p>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -45,12 +45,12 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="your@email.com"
+              placeholder="twoj@email.com"
             />
           </div>
           
           <div className="form-group">
-            <label>Password</label>
+            <label>Hasło</label>
             <input
               type="password"
               value={password}
@@ -64,18 +64,18 @@ function Login() {
           {error && <div className="alert alert-error">{error}</div>}
 
           <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Log In'}
+            {loading ? 'Ładowanie...' : isSignUp ? 'Zarejestruj się' : 'Zaloguj się'}
           </button>
         </form>
 
         <p className="switch-mode">
-          {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+          {isSignUp ? 'Masz już konto? ' : 'Nie masz konta? '}
           <button 
             type="button" 
             className="link-btn"
             onClick={() => setIsSignUp(!isSignUp)}
           >
-            {isSignUp ? 'Log In' : 'Sign Up'}
+            {isSignUp ? 'Zaloguj się' : 'Zarejestruj się'}
           </button>
         </p>
       </div>

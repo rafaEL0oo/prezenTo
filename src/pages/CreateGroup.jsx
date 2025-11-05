@@ -5,11 +5,11 @@ import { auth, db } from '../firebase/config';
 import './CreateGroup.css';
 
 const CHAOS_QUESTIONS = [
-  'What is your favorite color?',
-  'What is your favorite hobby?',
-  'What is your favorite type of food?',
-  'What would be your ideal gift?',
-  'What is your favorite holiday tradition?'
+  'Jaki jest Twój ulubiony kolor?',
+  'Jakie jest Twoje ulubione hobby?',
+  'Jaki jest Twój ulubiony rodzaj jedzenia?',
+  'Jaki byłby Twój idealny prezent?',
+  'Jaka jest Twoja ulubiona świąteczna tradycja?'
 ];
 
 function CreateGroup() {
@@ -44,16 +44,16 @@ function CreateGroup() {
     try {
       const user = auth.currentUser;
       if (!user) {
-        throw new Error('You must be logged in');
+        throw new Error('Musisz być zalogowany');
       }
 
       // Validate required fields
       if (!formData.groupName || !formData.budget || !formData.eventDate) {
-        throw new Error('Please fill in all required fields');
+        throw new Error('Proszę wypełnić wszystkie wymagane pola');
       }
 
       if (formData.adminParticipating && (!formData.adminName || !formData.adminEmail)) {
-        throw new Error('Please provide your name and email if participating');
+        throw new Error('Proszę podać swoje imię i email, jeśli chcesz uczestniczyć');
       }
 
       // Create group document
@@ -96,46 +96,46 @@ function CreateGroup() {
   return (
     <div className="page-container">
       <div className="card">
-        <h1>🎄 Create Secret Santa Group</h1>
+        <h1>🎄 Utwórz Grupę Mikołajkową</h1>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Group Name *</label>
+            <label>Nazwa Grupy *</label>
             <input
               type="text"
               name="groupName"
               value={formData.groupName}
               onChange={handleInputChange}
               required
-              placeholder="e.g., Secret Santa at Chudy & Ola's"
+              placeholder="np. Mikołajkowa impreza"
             />
           </div>
 
           <div className="form-group">
-            <label>Welcome Message</label>
+            <label>Wiadomość Powitalna</label>
             <textarea
               name="welcomeMessage"
               value={formData.welcomeMessage}
               onChange={handleInputChange}
-              placeholder="A warm message for participants joining your group..."
+              placeholder="Ciepła wiadomość dla uczestników dołączających do Twojej grupy..."
             />
           </div>
 
           <div className="form-group">
-            <label>Mode *</label>
+            <label>Tryb *</label>
             <select
               name="mode"
               value={formData.mode}
               onChange={handleInputChange}
               required
             >
-              <option value="standard">📋 Standard - Participants know their match immediately</option>
-              <option value="chaos">🎲 Chaos - Participants receive hints based on answers</option>
+              <option value="standard">📋 Standardowy - Uczestnicy od razu wiedzą, komu kupują</option>
+              <option value="chaos">🎲 Chaos - Uczestnicy otrzymują podpowiedzi na podstawie odpowiedzi</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label>Budget Limit ($) *</label>
+            <label>Limit Budżetu (PLN) *</label>
             <input
               type="number"
               name="budget"
@@ -149,7 +149,7 @@ function CreateGroup() {
           </div>
 
           <div className="form-group">
-            <label>Event Date *</label>
+            <label>Data Wydarzenia *</label>
             <input
               type="date"
               name="eventDate"
@@ -168,33 +168,33 @@ function CreateGroup() {
                 checked={formData.adminParticipating}
                 onChange={handleInputChange}
               />
-              I am participating in this Secret Santa
+              Uczestniczę w tym Mikołajkowym
             </label>
           </div>
 
           {formData.adminParticipating && (
             <>
               <div className="form-group">
-                <label>Your Name *</label>
+                <label>Twoje Imię *</label>
                 <input
                   type="text"
                   name="adminName"
                   value={formData.adminName}
                   onChange={handleInputChange}
                   required={formData.adminParticipating}
-                  placeholder="Your name"
+                  placeholder="Twoje imię"
                 />
               </div>
 
               <div className="form-group">
-                <label>Your Email *</label>
+                <label>Twój Email *</label>
                 <input
                   type="email"
                   name="adminEmail"
                   value={formData.adminEmail}
                   onChange={handleInputChange}
                   required={formData.adminParticipating}
-                  placeholder="your@email.com"
+                  placeholder="twoj@email.com"
                 />
               </div>
             </>
@@ -208,14 +208,14 @@ function CreateGroup() {
               onClick={() => navigate('/dashboard')}
               className="btn btn-secondary"
             >
-              Cancel
+              Anuluj
             </button>
             <button 
               type="submit" 
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Creating...' : 'Create Group'}
+              {loading ? 'Tworzenie...' : 'Utwórz Grupę'}
             </button>
           </div>
         </form>

@@ -15,14 +15,14 @@ const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
  */
 export async function sendDrawNotification(participant, match, group) {
   const eventDate = group.eventDate?.toDate ? group.eventDate.toDate() : new Date(group.eventDate);
-  const formattedDate = eventDate.toLocaleDateString('en-US', { 
+  const formattedDate = eventDate.toLocaleDateString('pl-PL', { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
 
-  const emailSubject = `🎁 Secret Santa Draw Results - ${group.groupName}`;
+  const emailSubject = `🎁 Wyniki Losowania Mikołajkowego - ${group.groupName}`;
 
   // Create email HTML content
   const emailContent = `
@@ -89,36 +89,36 @@ export async function sendDrawNotification(participant, match, group) {
     </head>
     <body>
       <div class="header">
-        <h1>🎁 Secret Santa Draw Complete! 🎄</h1>
+        <h1>🎁 Losowanie Mikołajkowe Zakończone! 🎄</h1>
       </div>
       <div class="content">
-        <p>Hi <strong>${participant.name}</strong>,</p>
-        <p>The Secret Santa draw for <strong>${group.groupName}</strong> has been completed!</p>
+        <p>Cześć <strong>${participant.name}</strong>,</p>
+        <p>Losowanie Mikołajkowe dla grupy <strong>${group.groupName}</strong> zostało zakończone!</p>
         
         <div class="match-box">
-          <p style="margin: 0 0 10px 0; font-size: 18px;">🎯 Your Secret Santa match is:</p>
+          <p style="margin: 0 0 10px 0; font-size: 18px;">🎯 Twój Mikołaj to:</p>
           <div class="match-name">${match.name}</div>
         </div>
 
         <div class="info-section">
-          <h2>📅 Event Details</h2>
-          <p><strong>Event Date:</strong> ${formattedDate}</p>
-          <p><strong>Budget:</strong> $${group.budget}</p>
-          <p><strong>Mode:</strong> ${group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standard'}</p>
+          <h2>📅 Szczegóły Wydarzenia</h2>
+          <p><strong>Data Wydarzenia:</strong> ${formattedDate}</p>
+          <p><strong>Budżet:</strong> ${group.budget} zł</p>
+          <p><strong>Tryb:</strong> ${group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standardowy'}</p>
         </div>
 
         ${group.welcomeMessage ? `
         <div class="info-section">
-          <h2>💬 Message from Organizer</h2>
+          <h2>💬 Wiadomość od Organizatora</h2>
           <p>${group.welcomeMessage}</p>
         </div>
         ` : ''}
 
-        <p style="margin-top: 30px;">Happy gift giving! 🎉</p>
+        <p style="margin-top: 30px;">Wesołych Świąt i udanego obdarowywania! 🎉</p>
         
         <div class="footer">
-          <p>This email was sent regarding the Secret Santa group: ${group.groupName}</p>
-          <p>PrezenTo - Secret Santa Made Easy</p>
+          <p>Ten e-mail został wysłany w związku z grupą Mikołajkową: ${group.groupName}</p>
+          <p>PrezenTo - Świąteczny Mikołaj - Magicznie Uproszczony</p>
         </div>
       </div>
     </body>

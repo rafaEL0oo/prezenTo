@@ -49,9 +49,9 @@ function Dashboard() {
   };
 
   const getStatusText = (group) => {
-    if (group.status === 'drawn') return '🎁 Draw Complete';
-    if (group.status === 'closed') return '🚫 Closed';
-    return '✅ Open';
+    if (group.status === 'drawn') return '🎁 Losowanie Zakończone';
+    if (group.status === 'closed') return '🚫 Zamknięte';
+    return '✅ Otwarte';
   };
 
   if (loading) {
@@ -62,31 +62,31 @@ function Dashboard() {
     <div className="page-container">
       <div className="container dashboard-container">
         <div className="dashboard-header">
-          <h1>🎅 Welcome to PrezenTo!</h1>
+          <h1>🎅 Witaj w PrezenTo!</h1>
           <div className="header-actions">
             <button onClick={() => navigate('/create-group')} className="btn btn-primary">
-              + Create New Group
+              + Utwórz Nową Grupę
             </button>
             <button onClick={handleLogout} className="btn btn-secondary">
-              Logout
+              Wyloguj się
             </button>
           </div>
         </div>
 
-        <h2>Your Groups</h2>
+        <h2>Twoje Grupy</h2>
         {groups.length === 0 ? (
           <div className="empty-state">
-            <p>🎄 No groups yet! Create your first Secret Santa group to get started.</p>
+            <p>🎄 Brak grup! Utwórz swoją pierwszą grupę Mikołajkową, aby zacząć.</p>
           </div>
         ) : (
           <div className="groups-list">
             {groups.map((group) => (
               <div key={group.id} className="group-card">
                 <h3>{group.groupName}</h3>
-                <p><strong>Event Date:</strong> {new Date(group.eventDate?.toDate()).toLocaleDateString()}</p>
-                <p><strong>Budget:</strong> ${group.budget}</p>
-                <p><strong>Mode:</strong> {group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standard'}</p>
-                <p><strong>Participants:</strong> {group.participants?.length || 0}</p>
+                <p><strong>Data Wydarzenia:</strong> {new Date(group.eventDate?.toDate()).toLocaleDateString('pl-PL')}</p>
+                <p><strong>Budżet:</strong> {group.budget} zł</p>
+                <p><strong>Tryb:</strong> {group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standardowy'}</p>
+                <p><strong>Uczestnicy:</strong> {group.participants?.length || 0}</p>
                 <span className={`group-status ${getStatus(group)}`}>
                   {getStatusText(group)}
                 </span>
@@ -95,14 +95,14 @@ function Dashboard() {
                     onClick={() => navigate(`/group/${group.id}`)}
                     className="btn btn-primary"
                   >
-                    View Details
+                    Zobacz Szczegóły
                   </button>
                   {group.status === 'drawn' && new Date(group.eventDate?.toDate()) <= new Date() && (
                     <button 
                       onClick={() => navigate(`/results/${group.id}`)}
                       className="btn btn-secondary"
                     >
-                      View Results
+                      Zobacz Wyniki
                     </button>
                   )}
                 </div>

@@ -27,7 +27,7 @@ function GroupDetails() {
       if (docSnap.exists()) {
         setGroup({ id: docSnap.id, ...docSnap.data() });
       } else {
-        setError('Group not found');
+        setError('Grupa nie została znaleziona');
       }
     } catch (err) {
       setError(err.message);
@@ -38,7 +38,7 @@ function GroupDetails() {
 
   const performDraw = async () => {
     if (!group || group.participants.length < 2) {
-      setError('Need at least 2 participants to perform the draw');
+      setError('Potrzeba co najmniej 2 uczestników, aby przeprowadzić losowanie');
       return;
     }
 
@@ -90,14 +90,14 @@ function GroupDetails() {
         const failureCount = emailResults.filter(r => !r.success).length;
 
         if (failureCount === 0) {
-          alert(`Draw completed! All ${successCount} participants have been notified via email.`);
+          alert(`Losowanie zakończone! Wszyscy ${successCount} uczestnicy zostali powiadomieni e-mailem.`);
         } else {
-          alert(`Draw completed! ${successCount} participants were notified via email. ${failureCount} email(s) failed to send.`);
+          alert(`Losowanie zakończone! ${successCount} uczestników zostało powiadomionych e-mailem. ${failureCount} e-mail(e) nie zostało wysłanych.`);
           console.error('Email sending errors:', emailResults.filter(r => !r.success));
         }
       } catch (emailError) {
         console.error('Error sending emails:', emailError);
-        alert(`Draw completed! However, there was an error sending email notifications. Please try again or notify participants manually.`);
+        alert(`Losowanie zakończone! Wystąpił jednak błąd podczas wysyłania powiadomień e-mail. Spróbuj ponownie lub powiadom uczestników ręcznie.`);
       }
 
       fetchGroup();
@@ -112,12 +112,12 @@ function GroupDetails() {
     const basename = import.meta.env.PROD ? '/prezenTo' : '';
     const link = `${window.location.origin}${basename}/join/${groupId}`;
     navigator.clipboard.writeText(link);
-    alert('Link copied to clipboard!');
+    alert('Link skopiowany do schowka!');
   };
 
   const handleResendEmail = async (participant) => {
     if (!group.assignments || !group.assignments[participant.email]) {
-      setError('No assignment found for this participant');
+      setError('Nie znaleziono przypisania dla tego uczestnika');
       return;
     }
 
@@ -127,16 +127,16 @@ function GroupDetails() {
     try {
       const match = group.assignments[participant.email];
       await sendDrawNotification(participant, match, group);
-      alert(`Email notification sent successfully to ${participant.name}!`);
+      alert(`Powiadomienie e-mail zostało pomyślnie wysłane do ${participant.name}!`);
     } catch (err) {
-      setError(`Failed to send email to ${participant.name}: ${err.message}`);
+      setError(`Nie udało się wysłać e-maila do ${participant.name}: ${err.message}`);
     } finally {
       setResendingEmail(null);
     }
   };
 
   const handleDeleteGroup = async () => {
-    if (!window.confirm('Are you sure you want to delete this group? This action cannot be undone.')) {
+    if (!window.confirm('Czy na pewno chcesz usunąć tę grupę? Ta akcja nie może zostać cofnięta.')) {
       return;
     }
 
@@ -145,7 +145,7 @@ function GroupDetails() {
 
     try {
       await deleteDoc(doc(db, 'groups', groupId));
-      alert('Group deleted successfully!');
+      alert('Grupa została pomyślnie usunięta!');
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -164,7 +164,7 @@ function GroupDetails() {
         <div className="card">
           <div className="alert alert-error">{error}</div>
           <button onClick={() => navigate('/dashboard')} className="btn btn-primary btn-full">
-            Back to Dashboard
+            Powrót do Panelu
           </button>
         </div>
       </div>
@@ -189,30 +189,30 @@ function GroupDetails() {
           )}
 
           <div className="group-info">
-            <p><strong>📅 Event Date:</strong> {new Date(group.eventDate?.toDate()).toLocaleDateString()}</p>
-            <p><strong>💰 Budget:</strong> ${group.budget}</p>
-            <p><strong>🎮 Mode:</strong> {group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standard'}</p>
-            <p><strong>👥 Participants:</strong> {group.participants?.length || 0}</p>
+            <p><strong>📅 Data Wydarzenia:</strong> {new Date(group.eventDate?.toDate()).toLocaleDateString('pl-PL')}</p>
+            <p><strong>💰 Budżet:</strong> {group.budget} zł</p>
+            <p><strong>🎮 Tryb:</strong> {group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standardowy'}</p>
+            <p><strong>👥 Uczestnicy:</strong> {group.participants?.length || 0}</p>
             <p><strong>📊 Status:</strong> {
-              group.status === 'drawn' ? '🎁 Draw Complete' : 
-              group.status === 'closed' ? '🚫 Closed' : 
-              '✅ Open'
+              group.status === 'drawn' ? '🎁 Losowanie Zakończone' : 
+              group.status === 'closed' ? '🚫 Zamknięte' : 
+              '✅ Otwarte'
             }</p>
           </div>
 
           {isAdmin && (
             <div className="admin-section">
-              <h2>Share Link</h2>
+              <h2>Link Udostępniania</h2>
               <div className="link-section">
                 <input type="text" value={joinLink} readOnly className="link-input" />
                 <button onClick={copyLink} className="btn btn-secondary">
-                  Copy Link
+                  Skopiuj Link
                 </button>
               </div>
 
-              <h2>Participants</h2>
+              <h2>Uczestnicy</h2>
               {group.participants?.length === 0 ? (
-                <p>No participants yet. Share the link to invite people!</p>
+                <p>Brak uczestników. Udostępnij link, aby zaprosić ludzi!</p>
               ) : (
                 <ul className="participants-list">
                   {group.participants.map((p, idx) => (
@@ -231,7 +231,7 @@ function GroupDetails() {
                             marginLeft: '1rem'
                           }}
                         >
-                          {resendingEmail === p.email ? 'Sending...' : '📧 Resend Email'}
+                          {resendingEmail === p.email ? 'Wysyłanie...' : '📧 Wyślij Ponownie'}
                         </button>
                       )}
                     </li>
@@ -245,7 +245,7 @@ function GroupDetails() {
                   className="btn btn-primary btn-full"
                   disabled={drawing}
                 >
-                  {drawing ? 'Drawing...' : '🎲 Perform Draw'}
+                  {drawing ? 'Losowanie...' : '🎲 Przeprowadź Losowanie'}
                 </button>
               )}
 
@@ -254,7 +254,7 @@ function GroupDetails() {
                   onClick={() => navigate(`/results/${groupId}`)}
                   className="btn btn-secondary btn-full"
                 >
-                  View Results
+                  Zobacz Wyniki
                 </button>
               )}
 
@@ -264,7 +264,7 @@ function GroupDetails() {
                 disabled={deleting}
                 style={{ marginTop: '1rem', background: '#DC143C', color: 'white' }}
               >
-                {deleting ? 'Deleting...' : '🗑️ Delete Group'}
+                {deleting ? 'Usuwanie...' : '🗑️ Usuń Grupę'}
               </button>
             </div>
           )}
@@ -272,7 +272,7 @@ function GroupDetails() {
           {error && <div className="alert alert-error">{error}</div>}
 
           <button onClick={() => navigate('/dashboard')} className="btn btn-secondary btn-full" style={{ marginTop: '1rem' }}>
-            Back to Dashboard
+            Powrót do Panelu
           </button>
         </div>
       </div>

@@ -75,10 +75,10 @@ function NotFoundPage() {
   return (
     <div className="page-container">
       <div className="card">
-        <h1>❌ Page Not Found</h1>
+        <h1>❌ Strona Nie Znaleziona</h1>
         <div className="alert alert-error">
-          <p>The page you're looking for doesn't exist.</p>
-          <p>Path: {location.pathname}</p>
+          <p>Strona, której szukasz, nie istnieje.</p>
+          <p>Ścieżka: {location.pathname}</p>
         </div>
       </div>
     </div>

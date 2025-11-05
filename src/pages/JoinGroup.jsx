@@ -21,7 +21,7 @@ function JoinGroup() {
     if (groupId) {
       fetchGroupDetails();
     } else {
-      setError('Invalid group link');
+      setError('Nieprawidłowy link do grupy');
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,14 +37,14 @@ function JoinGroup() {
       const cleanGroupId = groupId?.trim();
       
       if (!cleanGroupId || cleanGroupId.length === 0) {
-        setError('Invalid group ID');
+        setError('Nieprawidłowe ID grupy');
         setLoading(false);
         return;
       }
       
       // Validate - Firestore IDs shouldn't contain slashes
       if (cleanGroupId.includes('/')) {
-        setError('Invalid group ID format');
+        setError('Nieprawidłowy format ID grupy');
         setLoading(false);
         return;
       }
@@ -59,26 +59,26 @@ function JoinGroup() {
         
         // Check if group is closed
         if (groupData.status === 'closed' || groupData.status === 'drawn') {
-          setError('This group is closed. Santas have already been assigned!');
+          setError('Ta grupa jest zamknięta. Mikołajowie zostali już przypisani!');
         } else if (groupData.status !== 'open') {
-          setError('This group is not open for new participants.');
+          setError('Ta grupa nie jest otwarta dla nowych uczestników.');
         }
       } else {
         console.error('Group not found with ID:', cleanGroupId);
-        setError('There is no group with that ID. Please check the link and make sure it is correct.');
+        setError('Nie ma grupy z tym ID. Sprawdź link i upewnij się, że jest poprawny.');
       }
     } catch (err) {
       console.error('Error fetching group:', err);
       // Handle Firestore permission errors and other errors
-      let errorMessage = 'Failed to load group. ';
+      let errorMessage = 'Nie udało się załadować grupy. ';
       if (err.code === 'permission-denied') {
-        errorMessage += 'Permission denied - you do not have access to this group.';
+        errorMessage += 'Odmowa dostępu - nie masz dostępu do tej grupy.';
       } else if (err.code === 'unavailable') {
-        errorMessage += 'Firebase service is temporarily unavailable. Please try again later.';
+        errorMessage += 'Usługa Firebase jest tymczasowo niedostępna. Spróbuj ponownie później.';
       } else if (err.message) {
         errorMessage += err.message;
       } else {
-        errorMessage += 'Please try again later.';
+        errorMessage += 'Spróbuj ponownie później.';
       }
       setError(errorMessage);
     } finally {
@@ -114,7 +114,7 @@ function JoinGroup() {
       );
 
       if (existingParticipant) {
-        throw new Error('This email is already registered for this group');
+        throw new Error('Ten email jest już zarejestrowany w tej grupie');
       }
 
       const participantData = {
@@ -156,7 +156,7 @@ function JoinGroup() {
     return (
       <div className="page-container">
         <div className="card">
-          <h1>❌ Unable to Join Group</h1>
+          <h1>❌ Nie można dołączyć do grupy</h1>
           <div className="alert alert-error">
             <p>{error}</p>
           </div>
@@ -170,10 +170,10 @@ function JoinGroup() {
     return (
       <div className="page-container">
         <div className="card">
-          <h1>🎉 Welcome to {group.groupName}!</h1>
+          <h1>🎉 Witaj w {group.groupName}!</h1>
           <div className="alert alert-success">
-            <p>You've successfully joined the group! The admin will start the draw once everyone has joined.</p>
-            <p>You'll receive an email notification when the draw is complete.</p>
+            <p>Pomyślnie dołączyłeś do grupy! Admin rozpocznie losowanie, gdy wszyscy dołączą.</p>
+            <p>Otrzymasz powiadomienie e-mail, gdy losowanie zostanie zakończone.</p>
           </div>
         </div>
       </div>
@@ -185,7 +185,7 @@ function JoinGroup() {
     return (
       <div className="page-container">
         <div className="card">
-          <h1>🎄 {group.groupName || 'Group'}</h1>
+          <h1>🎄 {group.groupName || 'Grupa'}</h1>
           <div className="alert alert-error">
             <p>{error}</p>
           </div>
@@ -201,7 +201,7 @@ function JoinGroup() {
         <div className="card">
           <h1>🎄 {group.groupName}</h1>
           <div className="alert alert-error">
-            <p>This group is closed and the Santas have already been assigned!</p>
+            <p>Ta grupa jest zamknięta i Mikołajowie zostali już przypisani!</p>
           </div>
         </div>
       </div>
@@ -216,7 +216,7 @@ function JoinGroup() {
           <img src={group.photoURL} alt={group.groupName} className="group-photo" />
         )}
         
-        <h1>🎅 You've been invited!</h1>
+        <h1>🎅 Zostałeś zaproszony!</h1>
         <h2>{group.groupName}</h2>
         
         {group.welcomeMessage && (
@@ -226,39 +226,39 @@ function JoinGroup() {
         )}
 
         <div className="group-info">
-          <p><strong>📅 Event Date:</strong> {new Date(group.eventDate?.toDate()).toLocaleDateString()}</p>
-          <p><strong>💰 Budget:</strong> ${group.budget}</p>
-          <p><strong>🎮 Mode:</strong> {group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standard'}</p>
+          <p><strong>📅 Data Wydarzenia:</strong> {new Date(group.eventDate?.toDate()).toLocaleDateString('pl-PL')}</p>
+          <p><strong>💰 Budżet:</strong> {group.budget} zł</p>
+          <p><strong>🎮 Tryb:</strong> {group.mode === 'chaos' ? '🎲 Chaos' : '📋 Standardowy'}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Your Name *</label>
+            <label>Twoje Imię *</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
               required
-              placeholder="Your name"
+              placeholder="Twoje imię"
             />
           </div>
 
           <div className="form-group">
-            <label>Your Email *</label>
+            <label>Twój Email *</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
               required
-              placeholder="your@email.com"
+              placeholder="twoj@email.com"
             />
           </div>
 
           {group.mode === 'chaos' && group.chaosQuestions && (
             <div className="questions-section">
-              <h3>Answer these questions to help your Secret Santa:</h3>
+              <h3>Odpowiedz na te pytania, aby pomóc swojemu Mikołajowi:</h3>
               {group.chaosQuestions.map((question, index) => (
                 <div key={index} className="form-group">
                   <label>{question}</label>
@@ -268,7 +268,7 @@ function JoinGroup() {
                     value={formData.answers[index] || ''}
                     onChange={handleInputChange}
                     required
-                    placeholder="Your answer..."
+                    placeholder="Twoja odpowiedź..."
                   />
                 </div>
               ))}
@@ -278,7 +278,7 @@ function JoinGroup() {
           {error && <div className="alert alert-error">{error}</div>}
 
           <button type="submit" className="btn btn-primary btn-full" disabled={submitting}>
-            {submitting ? 'Joining...' : 'Join Group'}
+            {submitting ? 'Dołączanie...' : 'Dołącz do Grupy'}
           </button>
         </form>
       </div>

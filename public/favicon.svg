@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Santa Hat -->
+  <!-- Hat body (red) -->
+  <path d="M 20 60 L 50 20 L 80 60 Z" fill="#DC143C" stroke="#000" stroke-width="2"/>
+  
+  <!-- White brim -->
+  <ellipse cx="50" cy="60" rx="35" ry="8" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
+  
+  <!-- White pom-pom -->
+  <circle cx="50" cy="20" r="8" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
+  
+  <!-- Hat band (optional decorative line) -->
+  <line x1="30" y1="45" x2="70" y2="45" stroke="#000" stroke-width="1.5" opacity="0.3"/>
+</svg>
+

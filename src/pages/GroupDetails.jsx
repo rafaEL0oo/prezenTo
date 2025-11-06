@@ -109,8 +109,7 @@ function GroupDetails() {
   };
 
   const copyLink = () => {
-    const basename = import.meta.env.PROD ? '/prezenTo' : '';
-    const link = `${window.location.origin}${basename}/join/${groupId}`;
+    const link = `${window.location.origin}/join/${groupId}`;
     navigator.clipboard.writeText(link);
     alert('Link skopiowany do schowka!');
   };
@@ -171,8 +170,7 @@ function GroupDetails() {
     );
   }
 
-  const basename = import.meta.env.PROD ? '/prezenTo' : '';
-  const joinLink = `${window.location.origin}${basename}/join/${groupId}`;
+  const joinLink = `${window.location.origin}/join/${groupId}`;
   const isAdmin = group.adminId === auth.currentUser?.uid;
   const canDraw = group.status === 'open' && group.participants.length >= 2;
 

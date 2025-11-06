@@ -22,7 +22,7 @@
         if (pathname.includes('/?/')) {
           var parts = pathname.split('/?/');
           if (parts.length === 2) {
-            var basePath = parts[0]; // /prezenTo
+            var basePath = parts[0]; // base path
             var restPath = parts[1].replace(/~and~/g, '&'); // join/AWPRKdAxS9KNbYMSRENx
             var normalizedPath = basePath + '/' + restPath;
             var newUrl = normalizedPath + window.location.search + window.location.hash;

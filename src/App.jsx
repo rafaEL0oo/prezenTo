@@ -54,11 +54,9 @@ function LoginRoute() {
 
 // Root redirect component - only redirects if we're exactly at the root path
 // This component ensures we only redirect from the exact root, not during route transitions
-// With basename configured in Router, location.pathname is already relative to basename
 function RootRedirect() {
   const location = useLocation();
-  // React Router v6 strips basename from location.pathname automatically
-  // So at root (/prezenTo/ or /), pathname will be '/' or ''
+  // At root, pathname will be '/' or ''
   // This check ensures we only redirect from exact root, preventing interference during URL normalization
   const isExactRoot = location.pathname === '/' || location.pathname === '';
   
@@ -86,11 +84,8 @@ function NotFoundPage() {
 }
 
 function App() {
-  // Use basename for GitHub Pages, empty for local development
-  const basename = import.meta.env.PROD ? '/prezenTo' : '';
-
   return (
-    <Router basename={basename}>
+    <Router>
       <div className="App">
         <Snowflakes />
         <Routes>
